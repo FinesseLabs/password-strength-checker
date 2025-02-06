@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Password Strength Checker</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #121212;
+            color: white;
+            text-align: center;
+            margin-top: 50px;
+        }
+        input {
+            padding: 10px;
+            width: 300px;
+            margin-top: 20px;
+            border: none;
+            border-radius: 5px;
+        }
+        #result {
+            margin-top: 20px;
+            font-size: 20px;
+        }
+        .weak {
+            color: red;
+        }
+        .medium {
+            color: yellow;
+        }
+        .strong {
+            color: green;
+        }
+    </style>
+</head>
+<body>
+    <h1>Password Strength Checker</h1>
+    <input type="password" id="passwordInput" placeholder="Enter your password" oninput="checkPassword()">
+    <p id="result">Start typing to check password strength...</p>
+
+    <script>
+        async function checkPassword() {
+            const password = document.getElementById("passwordInput").value;
+            if (!password) {
+                document.getElementById("result").textContent = "Start typing to check password strength...";
+                return;
+            }
+
+            // Send the password to the server
+            const response = await fetch('http://127.0.0.1:5000/check-password', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ password: password })
+            });
+
+            const data = await response.json();
+
+            // Show the result
+            const resultElement = document.getElementById("result");
+            if (data.strength) {
+                resultElement.textContent = `Password Strength: ${data.strength}`;
+                resultElement.className = data.strength.toLowerCase(); // Add color class
+            } else {
+                resultElement.textContent = "Error checking password!";
+            }
+        }
+    </script>
+</body>
+</html>
